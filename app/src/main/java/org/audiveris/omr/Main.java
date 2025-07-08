@@ -451,7 +451,7 @@ public class Main
                 "Locale language to be used in the whole application (en, fr)");
 
         private final Constant.String supportedLocales = new Constant.String(
-                "en,fr",
+                "en,fr,zh_CN",
                 "Comma-separated list of supported locale languages");
 
         private final Constant.Boolean persistBatchCliConstants = new Constant.Boolean(
