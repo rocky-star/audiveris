@@ -13,10 +13,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-22.04, windows-latest, macos-latest, macos-13]
-        # ubuntu-22.04 is a fix for issue #805 libasound2t64 is required but not found
-        # macos-latest is for Apple Silicon (arm64) support
-        # macos-13 is for legacy Intel (x64) hardware support
+        include:
+          - os: ubuntu-latest
+          - os: ubuntu-22.04    # fix for issue #805 libasound2t64 is required but not found
+          - os: macos-latest    # for Apple Silicon (arm64) support
+          - os: macos-13        # for legacy Intel (x64) hardware support
+          - os: windows-latest
+            option: ""          # without console
+          - os: windows-latest
+            option: Console     # with console
 
     steps:
       - name: Checkout code
@@ -38,14 +43,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build installer on ${{ matrix.os }}
-        run: ./gradlew --info jpackage
+      - name: tiTree on ${{ matrix.os }}
+        run: ./gradlew tiTree jpackage
+
+      - name: tiOrder on ${{ matrix.os }}
+        run: ./gradlew tiOrder jpackage
+
+      - name: Build installer on ${{ matrix.os }} option ${{ matrix.option }}
+        run: ./gradlew --info jpackage -Poption=${{ matrix.option }}
 
       - name: Upload installer
         id: upload-installer
         uses: actions/upload-artifact@v4
         with:
-          name: installer-${{ matrix.os }}
+          name: installer-${{ matrix.os }}${{ matrix.option }}
           path: packaging/build/dist/*
           compression-level: 0
           overwrite: true
@@ -65,10 +76,7 @@ jobs:
           prince --version
 
       - name: Generate PDF
-        run: |
-          chmod +x ./docs/pdf/pdf-build.sh
-          cd ./docs
-          ./pdf/pdf-build.sh
+        run: ./gradlew --info :docs:handbookPdf
           
       - name: Verify generated pdf
         run: ls -l ./docs/build/pdf
@@ -81,9 +89,51 @@ jobs:
           compression-level: 0
           overwrite: true
 
+  # Build the schema documentation
+  build-schema-doc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Retrieve Gradle properties
+        uses: BrycensRanch/read-properties-action@v1
+        id: all
+        with:
+          file: gradle.properties
+          all: true
+
+      - name: Setup Java ${{ steps.all.outputs.theMinJavaVersion }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ steps.all.outputs.theMinJavaVersion }}
+          distribution: zulu
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        
+      - name: Install xsltproc
+        run: |
+          sudo apt update
+          sudo apt install xsltproc
+          xsltproc --version
+
+      - name: Build schema doc
+        run: ./gradlew --info :schemas:genSchemaDoc
+
+      - name: Upload schema doc
+        id: upload-schema-doc
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-doc
+          path: schemas/build/distributions/*
+          compression-level: 0
+          overwrite: true
+
   # Collect all artifacts and draft a release with them
   global-upload:
-    needs: [build-installer, build-handbook-pdf]
+    needs: [build-installer, build-handbook-pdf, build-schema-doc]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -107,6 +157,12 @@ jobs:
           name: installer-windows-latest
           path: ./artifacts
 
+      - name: Download windows installer with Console option
+        uses: actions/download-artifact@v4
+        with:
+          name: installer-windows-latestConsole
+          path: ./artifacts
+
       - name: Download macos installer
         uses: actions/download-artifact@v4
         with:
@@ -123,6 +179,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: handbook
+          path: ./artifacts
+
+      - name: Download schema doc
+        uses: actions/download-artifact@v4
+        with:
+          name: schema-doc
           path: ./artifacts
 
       - name: Create Release

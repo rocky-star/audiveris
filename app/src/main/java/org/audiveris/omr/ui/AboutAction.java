@@ -114,7 +114,6 @@ public class AboutAction
                 null,
                 options,
                 options[0]);
-        System.out.println("choice: " + choice);
 
         if (choice == 1) {
             copyToClipBoard();
@@ -168,7 +167,7 @@ public class AboutAction
         final JLabel titleLabel = new JLabel();
         titleLabel.setFont(
                 new Font(
-                        "Arial",
+                        UIUtil.defaultFontName(),
                         Font.BOLD,
                         UIUtil.adjustedSize(constants.titleFontSize.getValue())));
         titleLabel.setName("aboutTitleLabel");
