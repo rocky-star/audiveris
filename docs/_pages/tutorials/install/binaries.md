@@ -37,31 +37,48 @@ The name of each installer file is formatted as:
  Audiveris-<version>-<OS>-<Architecture>
 ```
 
-For example, the assets of the [5.5.3 release](https://github.com/Audiveris/audiveris/releases/tag/5.5.3)
+For example, the assets of the [5.7.0 release](https://github.com/Audiveris/audiveris/releases/tag/5.7.0)
 contain these files:
 
-| File name | Size | Role |
-| :---      | :--- | :--- |
-| **Audiveris-5.5.3-macosx-arm64.dmg** | 66.4 MB | macOS installer (arm64 architecture) |
-| **Audiveris-5.5.3-macosx-x86_64.dmg** | 68.1 MB | macOS installer (x86_64 architecture) |
-| **Audiveris-5.5.3-windows-x86_64.msi** | 66.2 MB   | Windows installer |
-| **Audiveris-5.5.3-linux-x86_64.deb** | 62.5 MB | Linux installer |
+| File name | Size | Role | Option | Architecture |
+| :---      | :--- | :--- | :--- | :--- |
+| **Audiveris-5.7.0-macosx-arm64.dmg** | 66.5 MB | macOS installer|     | arm64 |
+| **Audiveris-5.7.0-macosx-x86_64.dmg** | 68.2 MB | macOS installer |   | x86_64 |
+| **Audiveris-5.7.0-ubuntu22.04-x86_64.deb** | 62.7 MB | Linux installer | 22.04 | x86_64 |
+| **Audiveris-5.7.0-ubuntu24.04-x86_64.deb** | 62.5 MB | Linux installer | 24.04 | x86_64 |
+| **Audiveris-5.7.0-windows-x86_64.msi** | 66.3 MB   | Windows installer |       | x86_64 |
+| **Audiveris-5.7.0-windowsConsole-x86_64.msi** | 66.3 MB   | Windows installer | Console | x86_64 |
+| **Audiveris_Handbook-5.7.0.pdf** | 12.9 MB   | PDF manual |  |  |
+| **Audiveris_Schemas_Doc-5.7.0.pdf** | 1 MB   | Developer doc |  |  |
 
-Notice that, for macOS, two different installers are provided:
-- One for the `arm64` architecture
-- One for the `x86_64` architecture
+Remarks:
+- for **macOS**, two different installers are provided:
+  - One for the `arm64` architecture
+  - One for the `x86_64` architecture
+- for **Linux**, installers are provided for two Ubuntu versions:
+  - Old `22.04`
+  - New `24.04`
+- for **Windows**, two installers are provided:
+  - One without console, which displays just the graphic user interface. This is the recommended variant.
+  - One with console, where a Terminal window is launched together with the graphic user interface.
+  This variant can be useful to display error messages.
+- The **PDF** version of the Audiveris **handbook** can be useful if you don't have a permanent Internet access,
+since its content is identical to the [online version](https://audiveris.github.io/audiveris/).
+- The **Schemas_Doc** is meant for the developers. It documents the entities `Book`, `Sheet` and `PlayList` which compose the Audiveris `.omr` project files.
 
-The downloaded installer file will then be used to install the application in the target OS, 
+The downloaded installer file will be used to install the application in the target OS, 
 as detailed in the following sections.
-
-Beside these installers, Audiveris provides an additional installer
--- actually a **Linux/Flatpak** package -- also with a suitable JRE included.
-This package can be installed directly from the
-[Flathub](https://flathub.org/apps/org.audiveris.audiveris) site.
 
 {: .note :}
 Once the application is launched, OCR languages can be downloaded directly from within the Audiveris application.
 See the [OCR languages](../../guides/main/languages.md) section.
+
+Beside these installers, Audiveris used to provide an additional installer
+-- actually a **Linux/Flatpak** package -- also with a suitable JRE included.
+This package can be installed directly from the
+[Flathub](https://flathub.org/apps/org.audiveris.audiveris) site.  
+However, the future of this Flatpak package is not clear, for lack of skill and/or manpower. 
+
 
 ## Windows installer
 
@@ -97,6 +114,24 @@ The very first time Audiveris is launched, the anti-virus software may get in th
 | The anti-virus has detected a suspicious file | ![](../../assets/images/windows_suspicious.png) |
 | The file looks safe, end of the check.  | ![](../../assets/images/windows_safe.png) |
 
+### Notes
+
+"***Failed to launch JVM***": A couple of users running on Windows 11 reported the same [issue 818](https://github.com/Audiveris/audiveris/issues/818).
+
+This is reportedly related to something called "Assistive Technology".
+It is documented in this article [https://www.papercut.com/kb/Main/AssistiveTechnologynotfound](https://www.papercut.com/kb/Main/AssistiveTechnologynotfound)
+which provides a solution, copied *verbatim* below.
+
+The best fix for this problem is to disable the Access Bridge technology in the Java configuration files. To do this, follow these steps:
+
+1. Navigate to C:\Users\<username>
+2. Open the file called .accessibility.properties using a standard text editor (Notepad is fine)
+3. Find the following lines in the config:
+⋅⋅⋅⋅* assistive_technologies=com.sun.java.accessibility.AccessBridge
+⋅⋅⋅⋅* screen_magnifier_present=true
+4. Add a hashmark (#) in front of theses lines
+5. Save your changes to the file
+
 ### Uninstallation
 
 To uninstall the program, open `Windows Settings`
@@ -115,7 +150,7 @@ which would choke on audiveris being potentially unsafe, etc.
 
 Instead, in a terminal, use a command like:
 ```sh
-$ sudo apt install /path/to/Audiveris-<version>-linux-x86_64.deb
+$ sudo apt install /path/to/Audiveris-<version>-ubuntu<osversion>-x86_64.deb
 ```
 
 This installs the application in the target folder:
