@@ -155,6 +155,9 @@ public class ShapeSet
             SMALL_FLAG_DOWN,
             SMALL_FLAG_SLASH_DOWN);
 
+    /** Valid shapes in a key. */
+    public static final EnumSet<Shape> KeyValidShapes = EnumSet.of(SHARP, FLAT, NATURAL);
+
     /** All SHARP-based keys. */
     public static final EnumSet<Shape> SharpKeys = EnumSet.of(
             KEY_SHARP_1,
@@ -382,12 +385,19 @@ public class ShapeSet
     public static final ShapeSet Articulations = new ShapeSet(
             ACCENT,
             Colors.SCORE_MODIFIERS,
-            shapesOf(ACCENT, TENUTO, STACCATO, STACCATISSIMO, MARCATO, MARCATO_BELOW));
+            shapesOf(
+                    ACCENT,
+                    TENUTO,
+                    STACCATO,
+                    STACCATISSIMO,
+                    STACCATISSIMO_BELOW,
+                    MARCATO,
+                    MARCATO_BELOW));
 
     public static final ShapeSet Attributes = new ShapeSet(
             PEDAL_MARK,
             Colors.SCORE_MODIFIERS,
-            shapesOf(PEDAL_MARK, PEDAL_UP_MARK, ARPEGGIATO));
+            shapesOf(PEDAL_MARK, PEDAL_UP_MARK, ARPEGGIATO, BOW_DOWN, BOW_UP));
 
     public static final ShapeSet Barlines = new ShapeSet(
             LEFT_REPEAT_SIGN,
@@ -433,6 +443,7 @@ public class ShapeSet
                     DYNAMICS_FFF,
                     DYNAMICS_MF,
                     DYNAMICS_FP,
+                    DYNAMICS_FZ,
                     DYNAMICS_SF,
                     DYNAMICS_SFZ,
                     CRESCENDO,
